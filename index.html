@@ -1,786 +1,683 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#087c50">
-<title>K - Lab Care Services | Phlebotomist</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>K - Lab Care Services</title>
 
 <style>
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f4f7f6;
-  color:#17352b;
+body{margin:0;font-family:Arial;background:#f4f7f6;color:#17352b}
+header{background:#087c50;color:white;text-align:center;padding:18px}
+header h1{margin:0;font-size:25px}
+header p{margin:5px 0 0;font-size:13px}
+.container{max-width:800px;margin:auto;padding:15px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:15px;box-shadow:0 2px 10px #0001}
+h2{color:#087c50}
+label{display:block;margin-top:10px;font-weight:bold;font-size:14px}
+input,select,textarea,button{
+width:100%;padding:12px;margin-top:6px;
+border:1px solid #ccd8d2;border-radius:8px;
+font-size:15px;box-sizing:border-box
 }
-
-header{
-  background:#087c50;
-  color:white;
-  padding:18px;
-  text-align:center;
-  position:sticky;
-  top:0;
-  z-index:10;
+button{background:#087c50;color:white;border:0;font-weight:bold;cursor:pointer}
+.search{border:2px solid #087c50}
+.test-list{max-height:400px;overflow:auto;margin-top:10px}
+.test{
+display:flex;align-items:center;
+padding:10px;border-bottom:1px solid #eee
 }
-
-header b{
-  font-size:21px;
+.test input{width:auto;margin:0 10px 0 0}
+.price{margin-left:auto;font-weight:bold}
+.discount{color:#087c50;font-size:12px}
+.total{
+font-size:22px;font-weight:bold;
+color:#087c50;text-align:center;
+padding:12px
 }
-
-.sub{
-  font-size:12px;
-  margin-top:5px;
+.invoice{
+background:#fff;border:2px solid #087c50;
+padding:15px;border-radius:10px
 }
-
-.container{
-  max-width:700px;
-  margin:auto;
-  padding:15px 15px 90px;
-}
-
-.card{
-  background:white;
-  border-radius:15px;
-  padding:16px;
-  margin:12px 0;
-  box-shadow:0 2px 10px rgba(0,0,0,.08);
-}
-
-h2,h3{
-  margin-top:5px;
-}
-
-.muted{
-  color:#718078;
-  font-size:13px;
-}
-
-button{
-  width:100%;
-  padding:13px;
-  margin-top:9px;
-  border:0;
-  border-radius:10px;
-  background:#087c50;
-  color:white;
-  font-size:15px;
-  font-weight:bold;
-}
-
-button.secondary{
-  background:#e7f2ed;
-  color:#087c50;
-}
-
-button.danger{
-  background:#a82e2e;
-}
-
-input{
-  width:100%;
-  padding:13px;
-  margin-top:9px;
-  border:1px solid #ccd9d3;
-  border-radius:10px;
-  font-size:16px;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-}
-
-.stat{
-  background:#eef8f3;
-  border-radius:12px;
-  padding:12px;
-  text-align:center;
-}
-
-.stat b{
-  display:block;
-  font-size:22px;
-  color:#087c50;
-}
-
-.order{
-  border-left:4px solid #087c50;
-}
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  margin:8px 0;
-}
-
-.label{
-  font-size:12px;
-  color:#75847e;
-}
-
-.value{
-  font-weight:600;
-  text-align:right;
-}
-
-.badge{
-  display:inline-block;
-  border-radius:20px;
-  padding:5px 9px;
-  font-size:12px;
-  font-weight:bold;
-  background:#fff1cc;
-  color:#795700;
-}
-
-.badge.done{
-  background:#dff5e9;
-  color:#087c50;
-}
-
-.success{
-  background:#e3f7eb;
-  padding:12px;
-  border-radius:10px;
-  color:#087c50;
-  font-weight:bold;
-  margin-bottom:12px;
-}
-
-.otp{
-  text-align:center;
-  font-size:25px;
-  letter-spacing:8px;
-}
-
-.hidden{
-  display:none;
-}
-
-.bottom{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:white;
-  border-top:1px solid #ddd;
-  padding:8px;
-  display:flex;
-  gap:8px;
-  z-index:20;
-}
-
-.bottom button{
-  margin:0;
-  background:white;
-  color:#666;
-}
-
-.bottom button.active{
-  color:#087c50;
-}
-
-@media(max-width:500px){
-  .row{
-    flex-direction:column;
-    gap:3px;
-  }
-
-  .value{
-    text-align:left;
-  }
-}
+.hidden{display:none}
+.success{background:#e5f7ed;color:#087c50;padding:12px;border-radius:8px}
+.error{background:#ffe8e8;color:#a00000;padding:12px;border-radius:8px}
 </style>
 </head>
 
 <body>
 
 <header>
-  <b>K - Lab Care Services</b>
-  <div class="sub">Phlebotomist Work Order App</div>
+<h1>K - Lab Care Services</h1>
+<p>Online Test Booking & Home Collection</p>
 </header>
 
 <div class="container">
 
-<!-- START -->
-<section id="startPage">
+<div class="card">
 
-  <div class="card">
-    <h2>👋 Welcome</h2>
+<h2>🧪 Test Booking</h2>
 
-    <p class="muted">
-      Start your work to see assigned home collection orders.
-    </p>
+<label>Patient Name</label>
+<input id="name" placeholder="Patient Name">
 
-    <button onclick="startWork()">
-      ▶ Start Work
-    </button>
-  </div>
+<label>Mobile Number</label>
+<input id="mobile" maxlength="10" placeholder="10 Digit Mobile Number">
 
-  <div class="card">
-    <h3>🔐 Patient Privacy</h3>
+<label>Email ID</label>
+<input id="email" type="email" placeholder="Email ID">
 
-    <p class="muted">
-      Patient personal details will remain locked until
-      OTP verification is completed.
-    </p>
-  </div>
+<label>Age</label>
+<input id="age" type="number" placeholder="Age">
 
-</section>
+<label>Gender</label>
+<select id="gender">
+<option value="">Select Gender</option>
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+</select>
 
+<label>Address</label>
+<textarea id="address" placeholder="Full Address"></textarea>
 
-<!-- WORK ORDERS -->
-<section id="ordersPage" class="hidden">
+<label>PIN Code</label>
+<input id="pin" maxlength="6"
+placeholder="PIN Code"
+oninput="checkPin()">
 
-  <div class="card">
+<div id="pinMsg"></div>
 
-    <h3>📋 Today's Work Orders</h3>
+<label>Lab / Service</label>
 
-    <div class="stats">
+<select id="lab" onchange="updatePrices()">
 
-      <div class="stat">
-        <b id="total">0</b>
-        Total
-      </div>
+<option value="">Select Lab</option>
+<option>Thyrocare</option>
+<option>Pathcare</option>
+<option>General Diagnostics</option>
+<option>Accuprobe</option>
+<option>Sage Path Lab</option>
+<option>Dr Lal Path</option>
+<option>SRL</option>
+<option>Medsis</option>
+<option>Sewarth Path Lab (Jabalpur)</option>
+<option>Redcliffe Lab</option>
+<option>Dr Remedies Lab</option>
+<option>Span Diagnostics</option>
 
-      <div class="stat">
-        <b id="pending">0</b>
-        Pending
-      </div>
+</select>
 
-      <div class="stat">
-        <b id="complete">0</b>
-        Complete
-      </div>
+<label>Collection Date</label>
+<input id="date" type="date">
 
-    </div>
+<label>Time Slot</label>
+<select id="slot">
 
-  </div>
+<option>06:00 - 06:30 AM</option>
+<option>06:30 - 07:00 AM</option>
+<option>07:00 - 07:30 AM</option>
+<option>07:30 - 08:00 AM</option>
+<option>08:00 - 08:30 AM</option>
+<option>08:30 - 09:00 AM</option>
+<option>09:00 - 09:30 AM</option>
+<option>09:30 - 10:00 AM</option>
+<option>10:00 - 10:30 AM</option>
+<option>10:30 - 11:00 AM</option>
+<option>11:00 - 11:30 AM</option>
+<option>11:30 - 12:00 PM</option>
+<option>12:00 - 12:30 PM</option>
+<option>12:30 - 01:00 PM</option>
+<option>01:00 - 01:30 PM</option>
+<option>01:30 - 02:00 PM</option>
+<option>02:00 - 02:30 PM</option>
+<option>02:30 - 03:00 PM</option>
+<option>03:00 - 03:30 PM</option>
+<option>03:30 - 04:00 PM</option>
+<option>04:00 - 04:30 PM</option>
+<option>04:30 - 05:00 PM</option>
+<option>05:00 - 05:30 PM</option>
+<option>05:30 - 06:00 PM</option>
+<option>06:00 - 06:30 PM</option>
+<option>06:30 - 07:00 PM</option>
+<option>07:00 - 07:30 PM</option>
+<option>07:30 - 08:00 PM</option>
 
-  <div id="orders"></div>
-
-</section>
-
-
-<!-- OTP -->
-<section id="verifyPage" class="hidden">
-
-  <div class="card">
-
-    <h2>🔐 Patient Verification</h2>
-
-    <p class="muted">
-      Patient details देखने के लिए OTP verify करें।
-    </p>
-
-    <div id="otpHint" class="muted"></div>
-
-    <input
-      id="otp"
-      class="otp"
-      inputmode="numeric"
-      maxlength="6"
-      placeholder="••••••"
-    >
-
-    <button onclick="verifyOtp()">
-      Verify OTP
-    </button>
-
-    <button class="secondary" onclick="backOrders()">
-      Cancel
-    </button>
-
-    <p id="otpMsg" class="muted"></p>
-
-  </div>
-
-</section>
-
-
-<!-- PATIENT DETAILS -->
-<section id="detailPage" class="hidden">
-
-  <div class="card">
-
-    <h2>📋 Work Order Details</h2>
-
-    <div class="success">
-      ✓ Patient verified. Details unlocked.
-    </div>
-
-    <div id="details"></div>
-
-    <button onclick="startCollection()">
-      🧪 Start Sample Collection
-    </button>
-
-    <button onclick="completeOrder()">
-      ✓ Complete Work Order
-    </button>
-
-    <button class="danger" onclick="backOrders()">
-      Back
-    </button>
-
-  </div>
-
-</section>
+</select>
 
 </div>
 
 
-<!-- BOTTOM NAV -->
-<div class="bottom">
+<div class="card">
 
-  <button class="active" onclick="goHome()">
-    🏠 Work
-  </button>
+<h2>🔎 Select Test / Package</h2>
 
-  <button onclick="profile()">
-    👤 Profile
-  </button>
+<input
+class="search"
+id="search"
+placeholder="Search CBC, Vitamin D, Thyroid..."
+oninput="searchTests()">
+
+<div id="tests" class="test-list"></div>
+
+<div class="total">
+Total: <span id="total">₹0</span>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>💳 Payment</h2>
+
+<select id="payment">
+<option>Cash</option>
+<option>UPI</option>
+</select>
+
+<button onclick="bookNow()">
+✅ Confirm Booking
+</button>
+
+</div>
+
+
+<div id="invoice" class="card hidden">
+
+<h2>🧾 Booking Bill</h2>
+
+<div class="invoice" id="invoiceData"></div>
+
+<button onclick="window.print()">
+🖨 Print / Save PDF
+</button>
+
+</div>
 
 </div>
 
 
 <script>
 
-/*
-==================================================
-DEMO WORK ORDERS
-==================================================
-*/
+/* =========================
+LAB DISCOUNTS
+========================= */
 
-const DEMO_OTP = "123456";
+const discounts={
 
-const orders = [
+"Thyrocare":40,
+"Pathcare":50,
+"General Diagnostics":40,
+"Accuprobe":50,
+"Sage Path Lab":50,
+"Dr Lal Path":20,
+"SRL":25,
+"Medsis":50,
+"Sewarth Path Lab (Jabalpur)":50,
+"Redcliffe Lab":30,
+"Dr Remedies Lab":40,
+"Span Diagnostics":40
 
-{
- id:"KLC-1001",
- patient:"Rahul Sharma",
- mobile:"98XXXXXX21",
- age:"42",
- gender:"Male",
- address:"Jabalpur",
- pin:"482001",
- lab:"Thyrocare",
- date:"Today",
- slot:"07:00–07:30 AM",
- tests:"CBC, Lipid Profile",
- status:"Pending"
-},
+};
 
-{
- id:"KLC-1002",
- patient:"Sunita Verma",
- mobile:"97XXXXXX45",
- age:"35",
- gender:"Female",
- address:"Adhartal, Jabalpur",
- pin:"482004",
- lab:"Pathcare",
- date:"Today",
- slot:"08:00–08:30 AM",
- tests:"Vitamin D + Vitamin B12",
- status:"Pending"
-}
+
+/* =========================
+SERVICE PIN CODES
+========================= */
+
+const servicePins=[
+
+"482001","482002","482003","482004",
+"482005","482006","482007","482008",
+"482009","482010","482011",
+
+"483501","483504","485771","485001",
+"484334","486001",
+
+"462011","462016","462003","462022",
+"462042","462023","462030",
+
+"452010","452009","452003","452002","452018",
+
+"470001","470002","470003","470661",
+
+"522408","456001",
+
+"474001","474002","474003","474005",
+"474006","474008","474011",
+
+"482001","482004","482008","482011","482007"
 
 ];
 
-let currentOrder = null;
+
+/* =========================
+TEST LIST
+========================= */
+
+const tests=[
+
+["CBC",300],
+["Liver Function Test",800],
+["Lipid Profile",600],
+["Kidney Profile",700],
+["Electrolyte",450],
+["Iron Profile",750],
+["Vitamin D Total",1000],
+["Vitamin B12",1000],
+["Testosterone",800],
+["Blood Sugar Fasting",100],
+["Blood Sugar Random",100],
+["Blood Sugar PP",100],
+["Urine Analysis",150],
+["Widal",250],
+["Malaria",180],
+["Dengue Profile",1200],
+["Thyroid Profile",500],
+["AMH",2500],
+["LH",600],
+["FSH",600],
+["Prolectine",600],
+["Free Testosterone",1200],
+["PSA",800],
+["Amylase",800],
+["Lipase",800],
+["SGPT",200],
+["SGOT",200],
+["Creatinine",200],
+["Uric Acid",200],
+["Total Cholesterol",250],
+["Blood Group",100],
+["Thyphi Dot",800],
+["Urine Culture",600],
+["Blood Culture",1000],
+["UPCR",800],
+["TB Gold",2200],
+["Double Marker",2200],
+["Triple Marker",3000],
+["Quadruple Marker",3500],
+["TORCH 8",2500],
+["TORCH 10",3500],
+["CA-125",1500],
+["CEA",1000],
+["CRP",600],
+["RA Factor",600],
+["Homocysteine",1500],
+["Cardiac Risk Marker",1200],
+
+["KLC-1 Health Package",2000],
+["Vitamin D + Vitamin B12 Combo",1600],
+["K-Labcare Fever Profile Basic",1500],
+["K-Labcare Fever Profile Advance",3000]
+
+];
 
 
-/*
-START WORK
-*/
+/* =========================
+LOAD TESTS
+========================= */
 
-function startWork(){
+function loadTests(){
 
-  showPage("ordersPage");
+let html="";
 
-  renderOrders();
+tests.forEach((t,i)=>{
+
+html+=`
+
+<div class="test">
+
+<input
+type="checkbox"
+value="${i}"
+onchange="calculate()">
+
+<span>
+${t[0]}
+</span>
+
+<span class="price" id="price${i}">
+₹${t[1]}
+</span>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("tests").innerHTML=html;
+
+}
+
+loadTests();
+
+
+/* =========================
+SEARCH
+========================= */
+
+function searchTests(){
+
+let q=
+document.getElementById("search")
+.value.toLowerCase();
+
+document
+.querySelectorAll(".test")
+.forEach((row,i)=>{
+
+let name=
+tests[i][0].toLowerCase();
+
+row.style.display=
+name.includes(q)
+?"flex"
+:"none";
+
+});
 
 }
 
 
-/*
-SHOW PAGE
-*/
+/* =========================
+DISCOUNT
+========================= */
 
-function showPage(id){
+function getDiscount(){
 
-  document
-  .querySelectorAll("section")
-  .forEach(section=>{
-    section.classList.add("hidden");
-  });
+let lab=
+document.getElementById("lab").value;
 
-  document
-  .getElementById(id)
-  .classList.remove("hidden");
+return discounts[lab] || 0;
 
 }
 
 
-/*
-RENDER WORK ORDERS
-*/
+/* =========================
+UPDATE PRICES
+========================= */
 
-function renderOrders(){
+function updatePrices(){
 
-  document.getElementById("total").innerText =
-    orders.length;
+let discount=getDiscount();
 
-  document.getElementById("pending").innerText =
-    orders.filter(x=>x.status !== "Complete").length;
+tests.forEach((t,i)=>{
 
-  document.getElementById("complete").innerText =
-    orders.filter(x=>x.status === "Complete").length;
+let offer=
+Math.round(
+t[1]*(100-discount)/100
+);
 
+document.getElementById("price"+i).innerHTML=
 
-  let html="";
+`<del>₹${t[1]}</del>
+<br>
+<b>₹${offer}</b>
+<br>
+<span class="discount">
+${discount}% OFF
+</span>`;
 
+});
 
-  orders.forEach((o,index)=>{
-
-    html += `
-
-    <div class="card order">
-
-      <div class="row">
-
-        <h3>${o.id}</h3>
-
-        <span class="badge ${
-          o.status === "Complete"
-          ? "done"
-          : ""
-        }">
-
-        ${o.status}
-
-        </span>
-
-      </div>
-
-
-      <div class="row">
-
-        <span class="label">
-          Patient
-        </span>
-
-        <span class="value">
-          🔒 Protected
-        </span>
-
-      </div>
-
-
-      <div class="row">
-
-        <span class="label">
-          Collection
-        </span>
-
-        <span class="value">
-          ${o.date} • ${o.slot}
-        </span>
-
-      </div>
-
-
-      <div class="row">
-
-        <span class="label">
-          PIN
-        </span>
-
-        <span class="value">
-          ${o.pin}
-        </span>
-
-      </div>
-
-
-      <button onclick="openOrder(${index})">
-
-        ${
-          o.status === "Complete"
-          ? "View Status"
-          : "🔐 Open Work Order"
-        }
-
-      </button>
-
-    </div>
-
-    `;
-
-  });
-
-
-  document.getElementById("orders").innerHTML =
-    html;
+calculate();
 
 }
 
 
-/*
-OPEN WORK ORDER
-*/
+/* =========================
+CALCULATE TOTAL
+========================= */
 
-function openOrder(index){
+function calculate(){
 
-  currentOrder = index;
+let discount=getDiscount();
 
-  document.getElementById("otp").value="";
+let total=0;
 
-  document.getElementById("otpMsg").innerText="";
+document
+.querySelectorAll(
+'#tests input[type="checkbox"]:checked'
+)
+.forEach(cb=>{
 
-  document.getElementById("otpHint").innerText =
-    "OTP registered mobile: " +
-    orders[index].mobile;
+let index=
+parseInt(cb.value);
 
-  showPage("verifyPage");
+total+=Math.round(
+tests[index][1]*
+(100-discount)/100
+);
 
-}
+});
 
-
-/*
-VERIFY OTP
-*/
-
-function verifyOtp(){
-
-  let entered =
-    document.getElementById("otp").value;
-
-  if(entered === DEMO_OTP){
-
-    showPage("detailPage");
-
-    showPatientDetails();
-
-  }
-
-  else{
-
-    document.getElementById("otpMsg").innerText =
-      "❌ OTP incorrect. Please enter correct OTP.";
-
-  }
+document.getElementById("total")
+.innerText=
+"₹"+total.toLocaleString("en-IN");
 
 }
 
 
-/*
-SHOW PATIENT DETAILS
-*/
+/* =========================
+PIN CHECK
+========================= */
 
-function showPatientDetails(){
+function checkPin(){
 
-  const o =
-    orders[currentOrder];
+let pin=
+document.getElementById("pin").value;
 
+let msg=
+document.getElementById("pinMsg");
 
-  document.getElementById("details").innerHTML = `
+if(pin.length!==6){
 
-    <div class="row">
+msg.innerHTML="";
 
-      <span class="label">
-        Booking ID
-      </span>
+return;
 
-      <span class="value">
-        ${o.id}
-      </span>
+}
 
-    </div>
+if(servicePins.includes(pin)){
 
+msg.innerHTML=
+'<div class="success">✓ Home Collection Available</div>';
 
-    <div class="row">
+}else{
 
-      <span class="label">
-        Patient Name
-      </span>
+msg.innerHTML=
+'<div class="error">✕ Home Collection Available नहीं है</div>';
 
-      <span class="value">
-        ${o.patient}
-      </span>
-
-    </div>
-
-
-    <div class="row">
-
-      <span class="label">
-        Mobile
-      </span>
-
-      <span class="value">
-        ${o.mobile}
-      </span>
-
-    </div>
-
-
-    <div class="row">
-
-      <span class="label">
-        Age / Gender
-      </span>
-
-      <span class="value">
-        ${o.age} / ${o.gender}
-      </span>
-
-    </div>
-
-
-    <div class="row">
-
-      <span class="label">
-        Address
-      </span>
-
-      <span class="value">
-        ${o.address}
-      </span>
-
-    </div>
-
-
-    <div class="row">
-
-      <span class="label">
-        PIN Code
-      </span>
-
-      <span class="value">
-        ${o.pin}
-      </span>
-
-    </div>
-
-
-    <div class="row">
-
-      <span class="label">
-        Lab
-      </span>
-
-      <span class="value">
-        ${o.lab}
-      </span>
-
-    </div>
-
-
-    <div class="row">
-
-      <span class="label">
-        Collection Slot
-      </span>
-
-      <span class="value">
-        ${o.slot}
-      </span>
-
-    </div>
-
-
-    <div class="row">
-
-      <span class="label">
-        Tests
-      </span>
-
-      <span class="value">
-        ${o.tests}
-      </span>
-
-    </div>
-
-  `;
+}
 
 }
 
 
-/*
-START SAMPLE COLLECTION
-*/
+/* =========================
+BOOKING
+========================= */
 
-function startCollection(){
+function bookNow(){
 
-  alert(
-    "Sample collection started for " +
-    orders[currentOrder].id
-  );
+let name=
+document.getElementById("name").value.trim();
 
-}
+let mobile=
+document.getElementById("mobile").value.trim();
 
+let pin=
+document.getElementById("pin").value.trim();
 
-/*
-COMPLETE WORK ORDER
-*/
+let lab=
+document.getElementById("lab").value;
 
-function completeOrder(){
-
-  orders[currentOrder].status =
-    "Complete";
-
-  alert(
-    "✓ Work Order Completed"
-  );
-
-  showPage("ordersPage");
-
-  renderOrders();
-
-}
+let selected=
+document.querySelectorAll(
+'#tests input[type="checkbox"]:checked'
+);
 
 
-/*
-BACK
-*/
+if(!name||
+!mobile||
+!pin||
+!lab||
+selected.length===0){
 
-function backOrders(){
+alert(
+"कृपया सभी जरूरी जानकारी भरें और कम से कम एक test select करें।"
+);
 
-  showPage("ordersPage");
-
-  renderOrders();
+return;
 
 }
 
 
-/*
-HOME
-*/
+if(!servicePins.includes(pin)){
 
-function goHome(){
+alert(
+"इस PIN Code पर Home Collection उपलब्ध नहीं है।"
+);
 
-  startWork();
+return;
 
 }
 
 
-/*
-PROFILE
-*/
+let discount=
+getDiscount();
 
-function profile(){
+let total=0;
 
-  alert(
-    "K - Lab Care Services\n\n" +
-    "Phlebotomist Profile"
-  );
+let selectedTests=[];
+
+
+selected.forEach(cb=>{
+
+let i=
+parseInt(cb.value);
+
+let mrp=
+tests[i][1];
+
+let offer=
+Math.round(
+mrp*(100-discount)/100
+);
+
+total+=offer;
+
+selectedTests.push(
+tests[i][0]+
+" - ₹"+offer
+);
+
+});
+
+
+let bookingId=
+"KLC-"+Date.now().toString().slice(-8);
+
+
+document.getElementById("invoiceData")
+.innerHTML=`
+
+<h3>K - Lab Care Services</h3>
+
+<p>
+<b>Booking ID:</b>
+${bookingId}
+</p>
+
+<p>
+<b>Patient:</b>
+${name}
+</p>
+
+<p>
+<b>Mobile:</b>
+${mobile}
+</p>
+
+<p>
+<b>Age:</b>
+${document.getElementById("age").value}
+</p>
+
+<p>
+<b>Gender:</b>
+${document.getElementById("gender").value}
+</p>
+
+<p>
+<b>Address:</b>
+${document.getElementById("address").value}
+</p>
+
+<p>
+<b>PIN:</b>
+${pin}
+</p>
+
+<p>
+<b>Lab:</b>
+${lab}
+</p>
+
+<p>
+<b>Collection Date:</b>
+${document.getElementById("date").value}
+</p>
+
+<p>
+<b>Time:</b>
+${document.getElementById("slot").value}
+</p>
+
+<p>
+<b>Discount:</b>
+${discount}%
+</p>
+
+<hr>
+
+<p>
+<b>Tests:</b>
+</p>
+
+<p>
+${selectedTests.join("<br>")}
+</p>
+
+<hr>
+
+<h2>
+Total: ₹${total.toLocaleString("en-IN")}
+</h2>
+
+<p>
+<b>Payment:</b>
+${document.getElementById("payment").value}
+</p>
+
+<div class="success">
+✓ Booking Successfully Created
+</div>
+
+`;
+
+
+document
+.getElementById("invoice")
+.classList.remove("hidden");
+
+
+document
+.getElementById("invoice")
+.scrollIntoView({
+behavior:"smooth"
+});
 
 }
 
