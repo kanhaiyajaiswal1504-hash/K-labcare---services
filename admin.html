@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KLC Admin Panel - Slot Management</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f7f9;
+  color:#222;
+}
+
+.header{
+  background:#087f8c;
+  color:#fff;
+  padding:18px;
+  text-align:center;
+}
+
+.header h1{
+  margin:0;
+  font-size:24px;
+}
+
+.header p{
+  margin:6px 0 0;
+  font-size:14px;
+}
+
+.container{
+  max-width:700px;
+  margin:20px auto;
+  padding:0 12px;
+}
+
+.card{
+  background:#fff;
+  padding:18px;
+  margin-bottom:16px;
+  border-radius:14px;
+  box-shadow:0 2px 10px #0001;
+}
+
+h2{
+  margin-top:0;
+  color:#087f8c;
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  margin-top:12px;
+  margin-bottom:5px;
+}
+
+input,select{
+  width:100%;
+  padding:12px;
+  border:1px solid #ccd5d9;
+  border-radius:8px;
+  font-size:16px;
+}
+
+button{
+  width:100%;
+  padding:13px;
+  border:0;
+  border-radius:8px;
+  margin-top:12px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.loginBtn{
+  background:#087f8c;
+  color:#fff;
+}
+
+.openBtn{
+  background:#18a558;
+  color:#fff;
+}
+
+.closeBtn{
+  background:#dc3545;
+  color:#fff;
+}
+
+.logoutBtn{
+  background:#555;
+  color:#fff;
+}
+
+.hidden{
+  display:none;
+}
+
+.slot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px;
+  margin-top:8px;
+  border-radius:9px;
+  border:1px solid #ddd;
+}
+
+.slotTime{
+  font-weight:bold;
+}
+
+.status{
+  padding:6px 10px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.open{
+  background:#d9f7e5;
+  color:#087c3e;
+}
+
+.closed{
+  background:#ffe0e0;
+  color:#b00020;
+}
+
+.slot button{
+  width:auto;
+  margin:0 0 0 8px;
+  padding:8px 12px;
+  font-size:13px;
+}
+
+.message{
+  padding:12px;
+  border-radius:8px;
+  background:#eefafa;
+  margin-top:12px;
+  display:none;
+}
+
+.count{
+  font-size:18px;
+  font-weight:bold;
+  margin:12px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>K - Lab Care Services</h1>
+  <p>Admin Panel • Slot Management</p>
+</div>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div class="card" id="loginCard">
+
+<h2>🔐 Admin Login</h2>
+
+<label>Admin PIN</label>
+<input
+  type="password"
+  id="adminPin"
+  maxlength="10"
+  placeholder="Enter Admin PIN"
+>
+
+<button class="loginBtn" onclick="login()">
+  Login
+</button>
+
+<div class="message" id="loginMsg"></div>
+
+</div>
+
+
+<!-- ADMIN -->
+<div id="adminPanel" class="hidden">
+
+<div class="card">
+
+<h2>📅 Slot Management</h2>
+
+<label>Collection Date</label>
+<input type="date" id="slotDate">
+
+<label>Time Slot</label>
+<select id="slotSelect"></select>
+
+<button class="openBtn" onclick="openSlot()">
+🟢 Slot चालू / Open करें
+</button>
+
+<button class="closeBtn" onclick="closeSlot()">
+🔴 Slot बंद / Close करें
+</button>
+
+<div class="message" id="slotMsg"></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>📋 Selected Date Slots</h2>
+
+<div class="count">
+Open Slots: <span id="openCount">0</span>
+</div>
+
+<div id="slotList"></div>
+
+</div>
+
+
+<div class="card">
+
+<h2>⚙️ Admin</h2>
+
+<button class="logoutBtn" onclick="logout()">
+Logout
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   ADMIN SETTINGS
+========================= */
+
+const ADMIN_PIN = "1234";
+
+const STORAGE_KEY = "KLC_OPEN_SLOTS_V3";
+
+
+/* =========================
+   TIME SLOTS
+========================= */
+
+const slotSelect =
+document.getElementById("slotSelect");
+
+for(let h=6; h<20; h++){
+
+  for(let m of [0,30]){
+
+    let startH = h;
+    let startM = m;
+
+    let endH = h;
+    let endM = m + 30;
+
+    if(endM >= 60){
+      endH++;
+      endM=0;
+    }
+
+    let start =
+      String(startH).padStart(2,"0") +
+      ":" +
+      String(startM).padStart(2,"0");
+
+    let end =
+      String(endH).padStart(2,"0") +
+      ":" +
+      String(endM).padStart(2,"0");
+
+    let option =
+      document.createElement("option");
+
+    option.value = start + " - " + end;
+    option.textContent = start + " - " + end;
+
+    slotSelect.appendChild(option);
+  }
+}
+
+
+/* =========================
+   DATE
+========================= */
+
+const dateInput =
+document.getElementById("slotDate");
+
+const today =
+new Date().toISOString().split("T")[0];
+
+dateInput.min = today;
+dateInput.value = today;
+
+dateInput.addEventListener(
+  "change",
+  renderSlots
+);
+
+
+/* =========================
+   LOGIN
+========================= */
+
+function login(){
+
+  const pin =
+    document.getElementById("adminPin").value;
+
+  const msg =
+    document.getElementById("loginMsg");
+
+  if(pin === ADMIN_PIN){
+
+    document
+      .getElementById("loginCard")
+      .classList.add("hidden");
+
+    document
+      .getElementById("adminPanel")
+      .classList.remove("hidden");
+
+    renderSlots();
+
+  }else{
+
+    msg.style.display="block";
+    msg.innerHTML="❌ गलत Admin PIN";
+  }
+}
+
+
+/* =========================
+   GET DATA
+========================= */
+
+function getData(){
+
+  try{
+
+    return JSON.parse(
+      localStorage.getItem(STORAGE_KEY)
+    ) || {};
+
+  }catch(e){
+
+    return {};
+  }
+}
+
+
+/* =========================
+   SAVE DATA
+========================= */
+
+function saveData(data){
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(data)
+  );
+}
+
+
+/* =========================
+   OPEN SLOT
+========================= */
+
+function openSlot(){
+
+  const date =
+    dateInput.value;
+
+  const slot =
+    slotSelect.value;
+
+  if(!date){
+
+    alert("पहले Date select करें");
+    return;
+  }
+
+  let data = getData();
+
+  if(!data[date]){
+    data[date] = [];
+  }
+
+  if(!data[date].includes(slot)){
+
+    data[date].push(slot);
+
+    saveData(data);
+
+    showSlotMessage(
+      "🟢 Slot चालू कर दिया गया"
+    );
+
+  }else{
+
+    showSlotMessage(
+      "ℹ️ यह slot पहले से चालू है"
+    );
+  }
+
+  renderSlots();
+}
+
+
+/* =========================
+   CLOSE SLOT
+========================= */
+
+function closeSlot(){
+
+  const date =
+    dateInput.value;
+
+  const slot =
+    slotSelect.value;
+
+  if(!date){
+
+    alert("पहले Date select करें");
+    return;
+  }
+
+  let data = getData();
+
+  if(!data[date]){
+    data[date] = [];
+  }
+
+  data[date] =
+    data[date].filter(
+      x => x !== slot
+    );
+
+  saveData(data);
+
+  showSlotMessage(
+    "🔴 Slot बंद कर दिया गया"
+  );
+
+  renderSlots();
+}
+
+
+/* =========================
+   CLOSE FROM LIST
+========================= */
+
+function removeSlot(slot){
+
+  const date =
+    dateInput.value;
+
+  let data = getData();
+
+  if(!data[date]) return;
+
+  data[date] =
+    data[date].filter(
+      x => x !== slot
+    );
+
+  saveData(data);
+
+  renderSlots();
+
+  showSlotMessage(
+    "🔴 Slot बंद कर दिया गया"
+  );
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function renderSlots(){
+
+  const date =
+    dateInput.value;
+
+  const list =
+    document.getElementById("slotList");
+
+  const count =
+    document.getElementById("openCount");
+
+  let data = getData();
+
+  let openSlots =
+    data[date] || [];
+
+  count.textContent =
+    openSlots.length;
+
+  list.innerHTML="";
+
+  if(openSlots.length === 0){
+
+    list.innerHTML =
+      "<p>इस date पर अभी कोई slot चालू नहीं है.</p>";
+
+    return;
+  }
+
+  openSlots.forEach(slot=>{
+
+    const div =
+      document.createElement("div");
+
+    div.className="slot";
+
+    div.innerHTML = `
+
+      <div>
+        <div class="slotTime">
+          ${slot}
+        </div>
+
+        <span class="status open">
+          🟢 OPEN
+        </span>
+      </div>
+
+      <button
+        class="closeBtn"
+        onclick="removeSlot('${slot}')">
+        बंद करें
+      </button>
+
+    `;
+
+    list.appendChild(div);
+
+  });
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showSlotMessage(text){
+
+  const msg =
+    document.getElementById("slotMsg");
+
+  msg.innerHTML=text;
+  msg.style.display="block";
+
+  setTimeout(()=>{
+    msg.style.display="none";
+  },2500);
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout(){
+
+  document
+    .getElementById("adminPanel")
+    .classList.add("hidden");
+
+  document
+    .getElementById("loginCard")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("adminPin")
+    .value="";
+}
+
+</script>
+
+</body>
+</html>
