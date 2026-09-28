@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#087c50">
+<title>K - Lab Care Services | Phlebotomist</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f7f6;
+  color:#17352b;
+}
+
+header{
+  background:#087c50;
+  color:white;
+  padding:18px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+header b{
+  font-size:21px;
+}
+
+.sub{
+  font-size:12px;
+  margin-top:5px;
+}
+
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:15px 15px 90px;
+}
+
+.card{
+  background:white;
+  border-radius:15px;
+  padding:16px;
+  margin:12px 0;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+h2,h3{
+  margin-top:5px;
+}
+
+.muted{
+  color:#718078;
+  font-size:13px;
+}
+
+button{
+  width:100%;
+  padding:13px;
+  margin-top:9px;
+  border:0;
+  border-radius:10px;
+  background:#087c50;
+  color:white;
+  font-size:15px;
+  font-weight:bold;
+}
+
+button.secondary{
+  background:#e7f2ed;
+  color:#087c50;
+}
+
+button.danger{
+  background:#a82e2e;
+}
+
+input{
+  width:100%;
+  padding:13px;
+  margin-top:9px;
+  border:1px solid #ccd9d3;
+  border-radius:10px;
+  font-size:16px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.stat{
+  background:#eef8f3;
+  border-radius:12px;
+  padding:12px;
+  text-align:center;
+}
+
+.stat b{
+  display:block;
+  font-size:22px;
+  color:#087c50;
+}
+
+.order{
+  border-left:4px solid #087c50;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin:8px 0;
+}
+
+.label{
+  font-size:12px;
+  color:#75847e;
+}
+
+.value{
+  font-weight:600;
+  text-align:right;
+}
+
+.badge{
+  display:inline-block;
+  border-radius:20px;
+  padding:5px 9px;
+  font-size:12px;
+  font-weight:bold;
+  background:#fff1cc;
+  color:#795700;
+}
+
+.badge.done{
+  background:#dff5e9;
+  color:#087c50;
+}
+
+.success{
+  background:#e3f7eb;
+  padding:12px;
+  border-radius:10px;
+  color:#087c50;
+  font-weight:bold;
+  margin-bottom:12px;
+}
+
+.otp{
+  text-align:center;
+  font-size:25px;
+  letter-spacing:8px;
+}
+
+.hidden{
+  display:none;
+}
+
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:white;
+  border-top:1px solid #ddd;
+  padding:8px;
+  display:flex;
+  gap:8px;
+  z-index:20;
+}
+
+.bottom button{
+  margin:0;
+  background:white;
+  color:#666;
+}
+
+.bottom button.active{
+  color:#087c50;
+}
+
+@media(max-width:500px){
+  .row{
+    flex-direction:column;
+    gap:3px;
+  }
+
+  .value{
+    text-align:left;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <b>K - Lab Care Services</b>
+  <div class="sub">Phlebotomist Work Order App</div>
+</header>
+
+<div class="container">
+
+<!-- START -->
+<section id="startPage">
+
+  <div class="card">
+    <h2>👋 Welcome</h2>
+
+    <p class="muted">
+      Start your work to see assigned home collection orders.
+    </p>
+
+    <button onclick="startWork()">
+      ▶ Start Work
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>🔐 Patient Privacy</h3>
+
+    <p class="muted">
+      Patient personal details will remain locked until
+      OTP verification is completed.
+    </p>
+  </div>
+
+</section>
+
+
+<!-- WORK ORDERS -->
+<section id="ordersPage" class="hidden">
+
+  <div class="card">
+
+    <h3>📋 Today's Work Orders</h3>
+
+    <div class="stats">
+
+      <div class="stat">
+        <b id="total">0</b>
+        Total
+      </div>
+
+      <div class="stat">
+        <b id="pending">0</b>
+        Pending
+      </div>
+
+      <div class="stat">
+        <b id="complete">0</b>
+        Complete
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="orders"></div>
+
+</section>
+
+
+<!-- OTP -->
+<section id="verifyPage" class="hidden">
+
+  <div class="card">
+
+    <h2>🔐 Patient Verification</h2>
+
+    <p class="muted">
+      Patient details देखने के लिए OTP verify करें।
+    </p>
+
+    <div id="otpHint" class="muted"></div>
+
+    <input
+      id="otp"
+      class="otp"
+      inputmode="numeric"
+      maxlength="6"
+      placeholder="••••••"
+    >
+
+    <button onclick="verifyOtp()">
+      Verify OTP
+    </button>
+
+    <button class="secondary" onclick="backOrders()">
+      Cancel
+    </button>
+
+    <p id="otpMsg" class="muted"></p>
+
+  </div>
+
+</section>
+
+
+<!-- PATIENT DETAILS -->
+<section id="detailPage" class="hidden">
+
+  <div class="card">
+
+    <h2>📋 Work Order Details</h2>
+
+    <div class="success">
+      ✓ Patient verified. Details unlocked.
+    </div>
+
+    <div id="details"></div>
+
+    <button onclick="startCollection()">
+      🧪 Start Sample Collection
+    </button>
+
+    <button onclick="completeOrder()">
+      ✓ Complete Work Order
+    </button>
+
+    <button class="danger" onclick="backOrders()">
+      Back
+    </button>
+
+  </div>
+
+</section>
+
+</div>
+
+
+<!-- BOTTOM NAV -->
+<div class="bottom">
+
+  <button class="active" onclick="goHome()">
+    🏠 Work
+  </button>
+
+  <button onclick="profile()">
+    👤 Profile
+  </button>
+
+</div>
+
+
+<script>
+
+/*
+==================================================
+DEMO WORK ORDERS
+==================================================
+*/
+
+const DEMO_OTP = "123456";
+
+const orders = [
+
+{
+ id:"KLC-1001",
+ patient:"Rahul Sharma",
+ mobile:"98XXXXXX21",
+ age:"42",
+ gender:"Male",
+ address:"Jabalpur",
+ pin:"482001",
+ lab:"Thyrocare",
+ date:"Today",
+ slot:"07:00–07:30 AM",
+ tests:"CBC, Lipid Profile",
+ status:"Pending"
+},
+
+{
+ id:"KLC-1002",
+ patient:"Sunita Verma",
+ mobile:"97XXXXXX45",
+ age:"35",
+ gender:"Female",
+ address:"Adhartal, Jabalpur",
+ pin:"482004",
+ lab:"Pathcare",
+ date:"Today",
+ slot:"08:00–08:30 AM",
+ tests:"Vitamin D + Vitamin B12",
+ status:"Pending"
+}
+
+];
+
+let currentOrder = null;
+
+
+/*
+START WORK
+*/
+
+function startWork(){
+
+  showPage("ordersPage");
+
+  renderOrders();
+
+}
+
+
+/*
+SHOW PAGE
+*/
+
+function showPage(id){
+
+  document
+  .querySelectorAll("section")
+  .forEach(section=>{
+    section.classList.add("hidden");
+  });
+
+  document
+  .getElementById(id)
+  .classList.remove("hidden");
+
+}
+
+
+/*
+RENDER WORK ORDERS
+*/
+
+function renderOrders(){
+
+  document.getElementById("total").innerText =
+    orders.length;
+
+  document.getElementById("pending").innerText =
+    orders.filter(x=>x.status !== "Complete").length;
+
+  document.getElementById("complete").innerText =
+    orders.filter(x=>x.status === "Complete").length;
+
+
+  let html="";
+
+
+  orders.forEach((o,index)=>{
+
+    html += `
+
+    <div class="card order">
+
+      <div class="row">
+
+        <h3>${o.id}</h3>
+
+        <span class="badge ${
+          o.status === "Complete"
+          ? "done"
+          : ""
+        }">
+
+        ${o.status}
+
+        </span>
+
+      </div>
+
+
+      <div class="row">
+
+        <span class="label">
+          Patient
+        </span>
+
+        <span class="value">
+          🔒 Protected
+        </span>
+
+      </div>
+
+
+      <div class="row">
+
+        <span class="label">
+          Collection
+        </span>
+
+        <span class="value">
+          ${o.date} • ${o.slot}
+        </span>
+
+      </div>
+
+
+      <div class="row">
+
+        <span class="label">
+          PIN
+        </span>
+
+        <span class="value">
+          ${o.pin}
+        </span>
+
+      </div>
+
+
+      <button onclick="openOrder(${index})">
+
+        ${
+          o.status === "Complete"
+          ? "View Status"
+          : "🔐 Open Work Order"
+        }
+
+      </button>
+
+    </div>
+
+    `;
+
+  });
+
+
+  document.getElementById("orders").innerHTML =
+    html;
+
+}
+
+
+/*
+OPEN WORK ORDER
+*/
+
+function openOrder(index){
+
+  currentOrder = index;
+
+  document.getElementById("otp").value="";
+
+  document.getElementById("otpMsg").innerText="";
+
+  document.getElementById("otpHint").innerText =
+    "OTP registered mobile: " +
+    orders[index].mobile;
+
+  showPage("verifyPage");
+
+}
+
+
+/*
+VERIFY OTP
+*/
+
+function verifyOtp(){
+
+  let entered =
+    document.getElementById("otp").value;
+
+  if(entered === DEMO_OTP){
+
+    showPage("detailPage");
+
+    showPatientDetails();
+
+  }
+
+  else{
+
+    document.getElementById("otpMsg").innerText =
+      "❌ OTP incorrect. Please enter correct OTP.";
+
+  }
+
+}
+
+
+/*
+SHOW PATIENT DETAILS
+*/
+
+function showPatientDetails(){
+
+  const o =
+    orders[currentOrder];
+
+
+  document.getElementById("details").innerHTML = `
+
+    <div class="row">
+
+      <span class="label">
+        Booking ID
+      </span>
+
+      <span class="value">
+        ${o.id}
+      </span>
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        Patient Name
+      </span>
+
+      <span class="value">
+        ${o.patient}
+      </span>
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        Mobile
+      </span>
+
+      <span class="value">
+        ${o.mobile}
+      </span>
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        Age / Gender
+      </span>
+
+      <span class="value">
+        ${o.age} / ${o.gender}
+      </span>
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        Address
+      </span>
+
+      <span class="value">
+        ${o.address}
+      </span>
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        PIN Code
+      </span>
+
+      <span class="value">
+        ${o.pin}
+      </span>
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        Lab
+      </span>
+
+      <span class="value">
+        ${o.lab}
+      </span>
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        Collection Slot
+      </span>
+
+      <span class="value">
+        ${o.slot}
+      </span>
+
+    </div>
+
+
+    <div class="row">
+
+      <span class="label">
+        Tests
+      </span>
+
+      <span class="value">
+        ${o.tests}
+      </span>
+
+    </div>
+
+  `;
+
+}
+
+
+/*
+START SAMPLE COLLECTION
+*/
+
+function startCollection(){
+
+  alert(
+    "Sample collection started for " +
+    orders[currentOrder].id
+  );
+
+}
+
+
+/*
+COMPLETE WORK ORDER
+*/
+
+function completeOrder(){
+
+  orders[currentOrder].status =
+    "Complete";
+
+  alert(
+    "✓ Work Order Completed"
+  );
+
+  showPage("ordersPage");
+
+  renderOrders();
+
+}
+
+
+/*
+BACK
+*/
+
+function backOrders(){
+
+  showPage("ordersPage");
+
+  renderOrders();
+
+}
+
+
+/*
+HOME
+*/
+
+function goHome(){
+
+  startWork();
+
+}
+
+
+/*
+PROFILE
+*/
+
+function profile(){
+
+  alert(
+    "K - Lab Care Services\n\n" +
+    "Phlebotomist Profile"
+  );
+
+}
+
+</script>
+
+</body>
+</html>
